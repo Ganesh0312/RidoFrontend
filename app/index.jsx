@@ -1,12 +1,43 @@
 import { StatusBar } from "expo-status-bar";
-import { Image, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../components/CustomButton.jsx"; // Fix the typo
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { image } from "../assets/images/Images.js";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Index() {
+  const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    checkUserToken();
+  }, []);
+  const checkUserToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      if (token) {
+        router.push("/home");
+      } else {
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error checking token:", error);
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView className="bg-priblue h-full flex justify-center items-center">
+        <ActivityIndicator size="large" color="#ffffff" />
+      </SafeAreaView>
+    );
+  }
   return (
     <>
+      {/* <StatusBar backgroundColor="#161622" style="light" /> */}
       <SafeAreaView className="bg-priblue h-full">
         <ScrollView
           contentContainerStyle={{
@@ -52,8 +83,6 @@ export default function Index() {
             />
           </View>
         </ScrollView>
-
-        <StatusBar backgroundColor="#161622" style="light" />
       </SafeAreaView>
     </>
   );

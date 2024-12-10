@@ -2,6 +2,9 @@ import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import "../global.css";
 import { useEffect } from "react";
+import Toast from "react-native-toast-message";
+import { StatusBar } from "react-native";
+
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [fontsLoaded, error] = useFonts({
@@ -32,6 +35,7 @@ export default function RootLayout() {
   }
   return (
     <>
+      <StatusBar backgroundColor="#161622" style="light" />
       <Stack
         screenOptions={{
           headerShown: false, // Global setting for all screens
@@ -42,6 +46,7 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
       </Stack>
+      <Toast />
     </>
   );
 }

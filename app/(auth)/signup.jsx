@@ -106,8 +106,14 @@ const SignUp = () => {
         text1: "Success",
         text2: "User registered successfully!",
       });
-
-      setTimeout(() => router.push("/signin"), 1500);
+      setForm({
+        username: "",
+        email: "",
+        password: "",
+        phone_number: "",
+        profile_picture: null,
+      });
+      setTimeout(() => router.push("/signin"), 1000);
     } catch (error) {
       console.error(
         "Registration Error:",
@@ -131,6 +137,10 @@ const SignUp = () => {
             minHeight: Dimensions.get("window").height - 100,
           }}
         >
+          <Text className=" flex justify-center text-2xl font-semibold text-white mt-10 ml-24 mb-16 text-3xl font-psemibold">
+            Register to Rido
+          </Text>
+
           {/* Profile Picture Circle */}
           <TouchableOpacity
             style={styles.imageCircle}
@@ -145,10 +155,6 @@ const SignUp = () => {
               <Text style={styles.uploadText}>Upload Image</Text>
             )}
           </TouchableOpacity>
-
-          <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
-            Register to Rido
-          </Text>
 
           <FormField
             title="UserName"

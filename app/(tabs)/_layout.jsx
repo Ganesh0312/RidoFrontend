@@ -36,7 +36,21 @@ const TabLayout = () => {
         <Tabs.Screen
           name="addride"
           options={{
-            title: "AddRide",
+            title: "Add Ride",
+            headerShown: false,
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "add-circle" : "add-circle-outline"} // Change icon based on focus
+                color={color}
+                size={focused ? size + 4 : size}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="myBike"
+          options={{
+            title: "My Bike",
             headerShown: false,
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons

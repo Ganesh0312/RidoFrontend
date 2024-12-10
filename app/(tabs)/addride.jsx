@@ -1,7 +1,11 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { Text, View } from "react-native";
+import React, { useState } from "react";
+import CustomButton from "../../components/CustomButton";
+import axiosInstance from "../../utils/axiosInstance";
+import showToast from "../../utils/toastService";
 
 const AddRide = () => {
+  const [rideDetails, setRideDetails] = useState({});
   return (
     <View>
       <Text>AddRide</Text>
@@ -10,5 +14,3 @@ const AddRide = () => {
 };
 
 export default AddRide;
-
-const styles = StyleSheet.create({});
