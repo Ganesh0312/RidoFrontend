@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "RidesData",
-    "slug": "RidesData",
+    "slug": "Rides-Data",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/roninimage.jpg",
@@ -12,22 +12,23 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "bikerides.data",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/roninimage1.jpg",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/raider.jpeg"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/avatar.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
@@ -36,6 +37,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "eecc79e0-80b6-4a07-b7c2-f3b954519c85"
+      }
     }
   }
 }

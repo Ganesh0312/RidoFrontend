@@ -12,8 +12,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import showToast from "../../utils/toastService.js";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-const myBike = () => {
-  const [bikeId, setBikeId] = useState(null);
+const MyBike = () => {
   const [bikeDetails, setBikeDetails] = useState(null);
   const [formVisible, setFormVisible] = useState(false);
   const [bikeModel, setBikeModel] = useState("");
@@ -25,34 +24,50 @@ const myBike = () => {
   const [showDatePicker, setShowDatePicker] = useState(false); // State to control date picker visibility
 
   useEffect(() => {
-    checkBikeId();
+    const initialize = async () => {
+      const storedUserId = await AsyncStorage.getItem("userId");
+      if (storedUserId) {
+        setUserId(storedUserId);
+        getBikeDetails(storedUserId);
+      }
+    };
+    initialize();
   }, []);
 
-  const checkBikeId = async () => {
-    const storedBikeId = await AsyncStorage.getItem("bikeId");
-    const storedUserId = await AsyncStorage.getItem("userId");
-    if (storedBikeId) {
-      setBikeId(storedBikeId);
-      getBikeDetails(storedBikeId);
-    }
-    if (storedUserId) {
-      setUserId(storedUserId);
-    }
-  };
-
-  const getBikeDetails = async (bikeId) => {
+  const getBikeDetails = async (userId) => {
     try {
-      const response = await axiosInstance.get(`/bikes/get/${bikeId}`);
-      setBikeDetails(response.data);
+      const response = await axiosInstance.get(`/bikes/getbyuserid/${userId}`);
+      if (response.data) {
+        setBikeDetails(response.data);
+
+        // Ensure bikeId exists before setting it
+        if (response.data.bike_id) {
+          await AsyncStorage.setItem(
+            "bikeId",
+            response.data.bike_id.toString()
+          );
+        } else {
+          console.warn("bikeId is not present in the response data.");
+        }
+      } else {
+        setBikeDetails(null);
+      }
     } catch (error) {
-      console.error("Error fetching bike details", error);
+      if (error.response && error.response.status === 404) {
+        // Handle 404 error: No bike found for the user
+        console.warn("No bike found for the user.");
+        setBikeDetails(null);
+      } else {
+        // Handle other errors
+        console.error("Error fetching bike details:", error);
+      }
     }
   };
 
   const handleAddBike = async () => {
     try {
       const response = await axiosInstance.post("/bikes/add", {
-        user_id: userId, // Replace with actual user ID
+        user_id: userId,
         bike_model: bikeModel,
         bike_registration: bikeRegistration,
         purchase_date: purchaseDate,
@@ -61,9 +76,8 @@ const myBike = () => {
       });
       const newBikeId = response.data.bikeId;
       await AsyncStorage.setItem("bikeId", newBikeId.toString());
-      setBikeId(newBikeId);
       setFormVisible(false);
-      getBikeDetails(newBikeId);
+      getBikeDetails(userId);
       showToast("success", "New bike Added", "Bike Added Successfully");
     } catch (error) {
       console.error("Error adding bike", error);
@@ -84,10 +98,9 @@ const myBike = () => {
       month: "short",
       day: "numeric",
     });
-    // You can customize this format
   };
 
-  if (bikeId && bikeDetails) {
+  if (bikeDetails) {
     return (
       <ScrollView
         contentContainerStyle={{
@@ -166,4 +179,4 @@ const myBike = () => {
   );
 };
 
-export default myBike;
+export default MyBike;
