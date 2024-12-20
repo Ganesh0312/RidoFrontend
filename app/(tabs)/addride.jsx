@@ -209,6 +209,25 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axiosInstance from "../../utils/axiosInstance";
 import showToast from "../../utils/toastService";
 import { useRouter } from "expo-router";
+import CustomButton from "../../components/CustomButton";
+import HeaderComponent from "../../components/HeaderComponent";
+const InputField = ({
+  label,
+  value,
+  onChangeText,
+  keyboardType = "default",
+  editable = true,
+  placeholder = "",
+}) => (
+  <TextInput
+    style={[styles.input, !editable && styles.disabledInput]}
+    placeholder={placeholder || label}
+    value={value}
+    onChangeText={onChangeText}
+    keyboardType={keyboardType}
+    editable={editable}
+  />
+);
 
 const AddRide = () => {
   const router = useRouter();
@@ -238,8 +257,13 @@ const AddRide = () => {
     drive_mode: "",
     drive_type: "",
     remarks: "",
-    user_id: null, // Hidden, fetched from AsyncStorage
-    bike_id: null, // Hidden, fetched from AsyncStorage
+    user_id: null,
+    bike_id: null,
+  });
+
+  const [showTimePicker, setShowTimePicker] = useState({
+    field: null,
+    visible: false,
   });
 
   useEffect(() => {
@@ -259,7 +283,6 @@ const AddRide = () => {
         router.push("myBike");
         return;
       }
-
       setRideDetails((prev) => ({
         ...prev,
         bike_id: storedBikeId,
@@ -283,6 +306,20 @@ const AddRide = () => {
     setShowDatePicker(false);
     if (selectedDate) {
       setRideDetails((prev) => ({ ...prev, ride_date: selectedDate }));
+    }
+  };
+
+  const handleTimeChange = (event, selectedTime) => {
+    setShowTimePicker({ field: null, visible: false });
+    if (selectedTime && showTimePicker.field) {
+      const formatedTime = selectedTime.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      setRideDetails((prev) => ({
+        ...prev,
+        [showTimePicker.field]: formatedTime,
+      }));
     }
   };
 
@@ -352,61 +389,194 @@ const AddRide = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Add New Ride</Text>
-      <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-        <TextInput
-          style={[styles.input, styles.disabledInput]}
-          placeholder="Ride Date"
-          value={
-            rideDetails.ride_date
-              ? rideDetails.ride_date.toLocaleDateString()
-              : ""
-          }
-          editable={false}
-        />
-      </TouchableOpacity>
+    <>
+      <HeaderComponent label="Rides" />
 
-      {showDatePicker && (
-        <DateTimePicker
-          value={rideDetails.ride_date || new Date()}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
-
-      {Object.keys(rideDetails)
-        .filter((field) => !["ride_date", "user_id", "bike_id"].includes(field))
-        .map((field) => (
-          <TextInput
-            key={field}
-            placeholder={field
-              .replace(/_/g, " ")
-              .replace(/\b\w/g, (c) => c.toUpperCase())}
-            value={rideDetails[field]}
-            onChangeText={(text) => handleInputChange(field, text)}
-            keyboardType={
-              field.includes("km") ||
-              field.includes("count") ||
-              field.includes("fuel")
-                ? "numeric"
-                : "default"
+      <ScrollView contentContainerStyle={styles.container}>
+        <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+          <InputField
+            label="Ride Date"
+            value={
+              rideDetails.ride_date
+                ? rideDetails.ride_date.toLocaleDateString()
+                : ""
             }
-            style={styles.input}
+            editable={false}
           />
-        ))}
+        </TouchableOpacity>
 
-      {isSubmitting ? (
-        <ActivityIndicator
-          size="large"
-          color="#0000ff"
-          style={styles.loading}
+        {showDatePicker && (
+          <DateTimePicker
+            value={rideDetails.ride_date || new Date()}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+          />
+        )}
+
+        <InputField
+          label="Day OF Week"
+          value={rideDetails.day_of_week}
+          onChangeText={(text) => handleInputChange("day_of_week", text)}
         />
-      ) : (
-        <Button title="Add Ride" onPress={handleAddRide} />
-      )}
-    </ScrollView>
+        <InputField
+          label="Ride Type"
+          value={rideDetails.ride_type}
+          onChangeText={(text) => handleInputChange("ride_type", text)}
+        />
+        <InputField
+          label="Ride Day Count"
+          value={rideDetails.ride_day_count}
+          onChangeText={(text) => handleInputChange("ride_day_count", text)}
+        />
+
+        <TouchableOpacity
+          onPress={() =>
+            setShowTimePicker({ field: "start_time", visible: true })
+          }
+        >
+          <InputField
+            label="Start Time"
+            value={rideDetails.start_time}
+            editable={false}
+          />
+        </TouchableOpacity>
+
+        <InputField
+          label="Start Kilometer"
+          value={rideDetails.start_km}
+          onChangeText={(text) => handleInputChange("start_km", text)}
+          keyboardType="numeric"
+        />
+
+        <InputField
+          label="Start Avg Mileage"
+          value={rideDetails.start_avg_mileage}
+          onChangeText={(text) => handleInputChange("start_avg_mileage", text)}
+          keyboardType="numeric"
+        />
+
+        <InputField
+          label="Start DTE"
+          value={rideDetails.start_dte}
+          onChangeText={(text) => handleInputChange("start_dte", text)}
+        />
+
+        <InputField
+          label="Start Address"
+          value={rideDetails.start_add}
+          onChangeText={(text) => handleInputChange("start_add", text)}
+        />
+        <InputField
+          label="End Address"
+          value={rideDetails.end_add}
+          onChangeText={(text) => handleInputChange("end_add", text)}
+        />
+
+        <TouchableOpacity
+          onPress={() =>
+            setShowTimePicker({ field: "end_time", visible: true })
+          }
+        >
+          <InputField
+            label="End Time"
+            value={rideDetails.end_time}
+            editable={false}
+          />
+        </TouchableOpacity>
+
+        {showTimePicker.visible && (
+          <DateTimePicker
+            value={new Date()}
+            mode="time"
+            display="default"
+            onChange={handleTimeChange}
+          />
+        )}
+
+        <InputField
+          label="End Kilometer"
+          value={rideDetails.end_km}
+          onChangeText={(text) => handleInputChange("end_km", text)}
+          keyboardType="numeric"
+        />
+
+        <InputField
+          label="End Avg Mileage"
+          value={rideDetails.end_avg_mileage}
+          onChangeText={(text) => handleInputChange("end_avg_mileage", text)}
+          keyboardType="numeric"
+        />
+
+        <InputField
+          label="End DTE"
+          value={rideDetails.end_dte}
+          onChangeText={(text) => handleInputChange("end_dte", text)}
+        />
+
+        <InputField
+          label="Via Stops"
+          value={rideDetails.via_stops}
+          onChangeText={(text) => handleInputChange("via_stops", text)}
+        />
+
+        {Object.entries(rideDetails)
+          .filter(
+            ([field]) =>
+              ![
+                "ride_date",
+                "user_id",
+                "bike_id",
+                "ride_type",
+                "day_of_week",
+                "ride_day_count",
+                "start_time",
+                "start_km",
+                "start_avg_mileage",
+                "start_dte",
+                "start_add",
+                "end_time",
+                "end_km",
+                "end_avg_mileage",
+                "end_dte",
+                "end_add",
+                "via_stops",
+              ].includes(field)
+          )
+          .map(([field, value]) => (
+            <InputField
+              key={field}
+              label={field
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, (c) => c.toUpperCase())}
+              value={value}
+              onChangeText={(text) => handleInputChange(field, text)}
+              keyboardType={
+                field.includes("km") ||
+                field.includes("count") ||
+                field.includes("fuel")
+                  ? "numeric"
+                  : "default"
+              }
+            />
+          ))}
+
+        {isSubmitting ? (
+          <ActivityIndicator
+            size="large"
+            color="#0000ff"
+            style={styles.loading}
+          />
+        ) : (
+          /* <Button title="Add Ride" onPress={handleAddRide} /> */
+          <CustomButton
+            title="Add Ride"
+            handlePress={handleAddRide}
+            containerStyles="w-full mt-7"
+          />
+        )}
+      </ScrollView>
+    </>
   );
 };
 

@@ -4,6 +4,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import axiosInstance from "../../utils/axiosInstance";
 import { image } from "../../assets/images/Images";
+import CustomButton from "../../components/CustomButton";
+import HeaderComponent from "../../components/HeaderComponent";
 const Profile = () => {
   const router = useRouter();
   const [userDetails, setUserDetails] = useState(null);
@@ -70,54 +72,51 @@ const Profile = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-100 p-6">
-      {/* Header */}
-      <Text className="text-4xl font-bold text-center text-blue-600 mb-8">
-        User Profile
-      </Text>
+    <>
+      <HeaderComponent label="Profile" />
+      <View className="flex-1  p-6">
+        {/* Header */}
 
-      {/* Profile Picture */}
-      <View className="items-center  mb-8">
-        <Image
-          source={
-            userDetails?.profile_picture
-              ? {
-                  uri: `data:image/jpeg;base64,${userDetails?.profile_picture}`,
-                }
-              : image.profile_image
-          }
-          className="w-32 h-32 rounded-full bg-gray-300 mb-4"
-          resizeMode="cover"
-        />
-        <Text className="text-2xl font-bold text-gray-900">
-          {userDetails?.username || "N/A"}
-        </Text>
-      </View>
-
-      {/* User Details */}
-      <View className="bg-white p-4 rounded-lg shadow-md">
-        <Text className="text-lg text-gray-700 mb-4">
-          <Text className="font-bold">Email: </Text>
-          {userDetails?.email || "N/A"}
-        </Text>
-        <Text className="text-lg text-gray-700">
-          <Text className="font-bold">Phone Number: </Text>
-          {userDetails?.phone_number || "N/A"}
-        </Text>
-      </View>
-
-      {/* Logout Button */}
-      <View className="mt-auto">
-        <TouchableOpacity
-          onPress={handleLogout}
-          className="bg-red-500 py-3 rounded-lg"
-        >
-          <Text className="text-white text-center text-lg font-semibold">
-            Logout
+        {/* Profile Picture */}
+        <View className="items-center  mb-8">
+          <Image
+            source={
+              userDetails?.profile_picture
+                ? {
+                    uri: `data:image/jpeg;base64,${userDetails?.profile_picture}`,
+                  }
+                : image.profile_image
+            }
+            className="w-32 h-32 rounded-full bg-gray-300 mb-4"
+            resizeMode="cover"
+          />
+          <Text className="text-2xl font-bold text-gray-900">
+            {userDetails?.username || "N/A"}
           </Text>
-        </TouchableOpacity>
+        </View>
+
+        {/* User Details */}
+        <View className="bg-white p-4 rounded-lg shadow-md">
+          <Text className="text-lg text-gray-700 mb-4">
+            <Text className="font-bold">Email: </Text>
+            {userDetails?.email || "N/A"}
+          </Text>
+          <Text className="text-lg text-gray-700">
+            <Text className="font-bold">Phone Number: </Text>
+            {userDetails?.phone_number || "N/A"}
+          </Text>
+        </View>
+
+        {/* Logout Button */}
+        <View className="mt-auto h-">
+          <CustomButton
+            title="Logout"
+            handlePress={handleLogout}
+            containerStyles="w-full mt-7 "
+          />
+        </View>
       </View>
-    </View>
+    </>
   );
 };
 

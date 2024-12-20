@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  TextInput,
-  Button,
-  ScrollView,
-  Platform,
-} from "react-native";
+import { Text, View, TextInput, ScrollView, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axiosInstance from "../../utils/axiosInstance";
 import showToast from "../../utils/toastService.js";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import CustomButton from "../../components/CustomButton.jsx";
+import HeaderComponent from "../../components/HeaderComponent.jsx";
 
 const MyBike = () => {
   const [bikeDetails, setBikeDetails] = useState(null);
@@ -86,7 +81,7 @@ const MyBike = () => {
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || purchaseDate;
-    setShowDatePicker(Platform.OS === "ios" ? true : false); // iOS requires manually closing the picker
+    setShowDatePicker(false); // Close picker on selection
     setPurchaseDate(currentDate);
   };
 
@@ -102,80 +97,97 @@ const MyBike = () => {
 
   if (bikeDetails) {
     return (
-      <ScrollView
-        contentContainerStyle={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 16,
-        }}
-      >
-        <Text className="text-xl font-bold mb-4">Bike Details:</Text>
-        <Text className="text-lg mb-2">Model: {bikeDetails.bike_model}</Text>
-        <Text className="text-lg mb-2">
-          Registration: {bikeDetails.bike_registration}
-        </Text>
-        <Text className="text-lg mb-2">
-          Purchase Date: {formatDate(bikeDetails.purchase_date)}
-        </Text>
-        <Text className="text-lg mb-2">
-          Initial KM: {bikeDetails.initial_km}
-        </Text>
-        <Text className="text-lg mb-2">Color: {bikeDetails.color}</Text>
-      </ScrollView>
+      <>
+        <HeaderComponent label="My Bike" />
+        <ScrollView className="flex-1 bg-gray-100 p-4">
+          <View className="bg-white shadow-lg rounded-lg p-6">
+            <Text className="text-2xl font-bold mb-4 text-gray-800">
+              Bike Details
+            </Text>
+            <Text className="text-lg text-gray-600 mb-2">
+              Model: {bikeDetails.bike_model}
+            </Text>
+            <Text className="text-lg text-gray-600 mb-2">
+              Registration: {bikeDetails.bike_registration}
+            </Text>
+            <Text className="text-lg text-gray-600 mb-2">
+              Purchase Date: {formatDate(bikeDetails.purchase_date)}
+            </Text>
+            <Text className="text-lg text-gray-600 mb-2">
+              Initial KM: {bikeDetails.initial_km}
+            </Text>
+            <Text className="text-lg text-gray-600 mb-2">
+              Color: {bikeDetails.color}
+            </Text>
+          </View>
+        </ScrollView>
+      </>
     );
   }
 
   return (
-    <View className="flex-1 justify-center items-center p-4">
-      {!formVisible ? (
-        <Button title="Add Bike" onPress={() => setFormVisible(true)} />
-      ) : (
-        <View className="w-full max-w-sm p-4 bg-white rounded-lg shadow-lg">
-          <TextInput
-            className="border-b-2 border-gray-300 mb-4 p-2"
-            placeholder="Bike Model"
-            value={bikeModel}
-            onChangeText={setBikeModel}
+    <>
+      <HeaderComponent label="My Bike" />
+      <View className="flex-1 justify-center items-center bg-gray-100 p-4">
+        {!formVisible ? (
+          <CustomButton
+            title="Add Bike"
+            handlePress={() => setFormVisible(true)}
+            containerStyles="w-full mt-7 bg-blue-500 text-white py-3 rounded-lg shadow"
           />
-          <TextInput
-            className="border-b-2 border-gray-300 mb-4 p-2"
-            placeholder="Bike Registration"
-            value={bikeRegistration}
-            onChangeText={setBikeRegistration}
-          />
-          {/* Display Date Picker for Purchase Date */}
-          <TextInput
-            className="border-b-2 border-gray-300 mb-4 p-2"
-            placeholder="Purchase Date"
-            value={purchaseDate ? formatDate(purchaseDate) : ""}
-            onTouchStart={() => setShowDatePicker(true)}
-          />
-          {showDatePicker && (
-            <DateTimePicker
-              value={purchaseDate || new Date()}
-              mode="date"
-              display="default"
-              onChange={handleDateChange}
+        ) : (
+          <View className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
+            <Text className="text-xl font-semibold mb-4 text-gray-800">
+              Add New Bike
+            </Text>
+            <TextInput
+              className="border-b-2 border-gray-300 mb-4 p-2"
+              placeholder="Bike Model"
+              value={bikeModel}
+              onChangeText={setBikeModel}
             />
-          )}
-          <TextInput
-            className="border-b-2 border-gray-300 mb-4 p-2"
-            placeholder="Initial KM"
-            value={initialKm}
-            onChangeText={setInitialKm}
-            keyboardType="numeric"
-          />
-          <TextInput
-            className="border-b-2 border-gray-300 mb-4 p-2"
-            placeholder="Color"
-            value={color}
-            onChangeText={setColor}
-          />
-          <Button title="Save Bike" onPress={handleAddBike} />
-        </View>
-      )}
-    </View>
+            <TextInput
+              className="border-b-2 border-gray-300 mb-4 p-2"
+              placeholder="Bike Registration"
+              value={bikeRegistration}
+              onChangeText={setBikeRegistration}
+            />
+            <TextInput
+              className="border-b-2 border-gray-300 mb-4 p-2"
+              placeholder="Purchase Date"
+              value={purchaseDate ? formatDate(purchaseDate) : ""}
+              onTouchStart={() => setShowDatePicker(true)}
+            />
+            {showDatePicker && (
+              <DateTimePicker
+                value={purchaseDate || new Date()}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+              />
+            )}
+            <TextInput
+              className="border-b-2 border-gray-300 mb-4 p-2"
+              placeholder="Initial KM"
+              value={initialKm}
+              onChangeText={setInitialKm}
+              keyboardType="numeric"
+            />
+            <TextInput
+              className="border-b-2 border-gray-300 mb-4 p-2"
+              placeholder="Color"
+              value={color}
+              onChangeText={setColor}
+            />
+            <CustomButton
+              title="Save Bike"
+              handlePress={handleAddBike}
+              containerStyles="bg-blue-500 text-white py-3 mt-4 rounded-lg shadow"
+            />
+          </View>
+        )}
+      </View>
+    </>
   );
 };
 

@@ -24,6 +24,7 @@ module.exports = {
           DEFAULT: "#393ec8",
           100: "#097bf2",
           200: "0610fb",
+          300: "#363dd1",
         },
       },
       fontFamily: {
